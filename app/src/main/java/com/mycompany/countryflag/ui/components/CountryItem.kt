@@ -2,14 +2,8 @@ package com.mycompany.countryflag.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,13 +17,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
+import com.mycompany.countryflag.models.Country
 import com.mycompany.countryflag.ui.theme.CountryFlagTheme
 
 @Composable
 fun CountryItem(
-    countryName: String,
-    countryCode: String,
-    countryDescription: String = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+    country: Country,
+    navHostController: NavHostController
 ) {
     var shouldExpand by rememberSaveable { mutableStateOf(false) }
 
@@ -45,7 +42,7 @@ fun CountryItem(
                 Image(
                     painter = painterResource(
                         id = LocalContext.current.resources.getIdentifier(
-                            countryCode,
+                            country.code,
                             "drawable",
                             LocalContext.current.packageName
                         )
@@ -58,8 +55,8 @@ fun CountryItem(
                         .padding(start = 8.dp)
                         .weight(1.0f)
                 ) {
-                    Text(text = countryName, style = TextStyle(fontWeight = FontWeight.Bold))
-                    Text(text = countryCode.uppercase())
+                    Text(text = country.name, style = TextStyle(fontWeight = FontWeight.Bold))
+                    Text(text = country.code.uppercase())
                 }
 
                 OutlinedButton(
@@ -69,14 +66,29 @@ fun CountryItem(
                 }
             }
             if (shouldExpand) {
-                Text(
-                    modifier = Modifier.padding(top = 8.dp),
-                    style = TextStyle(textAlign = TextAlign.Justify),
-                    text = countryDescription
-                )
+                Column {
+                    Text(
+                        modifier = Modifier.padding(top = 8.dp),
+                        style = TextStyle(textAlign = TextAlign.Justify),
+                        text = country.description
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            navHostController.navigate("countryDetails/${encodeCountry(country = country)}")
+                        }
+                    ) {
+                        Text(text = "DETAILS")
+                    }
+                }
             }
         }
     }
+}
+
+private fun encodeCountry(country: Country): String {
+    return Gson().toJson(country)
 }
 
 @Preview(showBackground = true)
@@ -84,8 +96,8 @@ fun CountryItem(
 fun CountryItemPreview() {
     CountryFlagTheme {
         CountryItem(
-            countryName = "France",
-            countryCode = "fra"
+            country = Country("France", "fra"),
+            navHostController = rememberNavController()
         )
     }
 }

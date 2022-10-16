@@ -8,8 +8,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mycompany.countryflag.ui.components.CountriesList
+import com.mycompany.countryflag.ui.components.CountryDetails
 import com.mycompany.countryflag.ui.components.DrawerMenu
 import com.mycompany.countryflag.ui.theme.CountryFlagTheme
 import kotlinx.coroutines.launch
@@ -20,6 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scaffoldState = rememberScaffoldState()
             val coroutineScope = rememberCoroutineScope()
+            val navHostController = rememberNavController()
             CountryFlagTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
@@ -45,7 +54,15 @@ class MainActivity : ComponentActivity() {
                         DrawerMenu()
                     }
                 ) {
-                    CountriesList()
+                    NavHost(navController = navHostController, startDestination = "countriesList") {
+                        composable("countriesList") { CountriesList(navHostController = navHostController) }
+                        composable(
+                            "countryDetails/{encodedCountry}",
+                            arguments = listOf(navArgument("encodedCountry") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            CountryDetails(encodedCountry = backStackEntry.arguments?.getString("encodedCountry")!!)
+                        }
+                    }
                 }
             }
         }
@@ -56,6 +73,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     CountryFlagTheme {
-        CountriesList()
+        CountriesList(navHostController = NavHostController(context = LocalContext.current))
     }
 }
