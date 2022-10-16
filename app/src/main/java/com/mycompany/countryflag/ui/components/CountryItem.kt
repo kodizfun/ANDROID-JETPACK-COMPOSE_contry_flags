@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.mycompany.countryflag.ui.theme.CountryFlagTheme
 
 @Composable
-fun CountryCell(
+fun CountryItem(
     countryName: String,
     countryCode: String,
     countryDescription: String = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
@@ -81,9 +81,9 @@ fun CountryCell(
 
 @Preview(showBackground = true)
 @Composable
-fun CellPreview() {
+fun CountryItemPreview() {
     CountryFlagTheme {
-        CountryCell(
+        CountryItem(
             countryName = "France",
             countryCode = "fra"
         )
