@@ -1,28 +1,28 @@
 package com.mycompany.countryflag.ui.components
 
+import com.mycompany.countryflag.viewmodels.CountryViewModel
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.mycompany.countryflag.models.Country
 import com.mycompany.countryflag.ui.theme.CountryFlagTheme
 
 @Composable
 fun CountriesList(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    countryViewModel: CountryViewModel
 ) {
+
+    val countriesState by countryViewModel.countries.collectAsState()
+
     LazyColumn {
-        item { CountryItem(country = Country(name = "Austria", code = "aut"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Belgium", code = "bel"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "France", code = "fra"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Germany", code = "deu"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Greece", code = "grc"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Italy", code = "ita"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Norway", code = "nor"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Portugal", code = "prt"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Spain", code = "esp"), navHostController = navHostController) }
-        item { CountryItem(country = Country(name = "Sweden", code = "swe"), navHostController = navHostController) }
+        items(countriesState) { country ->
+            CountryItem(country = country, navHostController = navHostController)
+        }
     }
 }
 
@@ -30,6 +30,6 @@ fun CountriesList(
 @Composable
 fun CountriesListScreenPreview() {
     CountryFlagTheme {
-        CountriesList(navHostController = NavHostController(context = LocalContext.current ))
+        CountriesList(navHostController = NavHostController(context = LocalContext.current), countryViewModel = CountryViewModel())
     }
 }

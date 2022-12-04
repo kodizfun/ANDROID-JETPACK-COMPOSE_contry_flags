@@ -1,11 +1,13 @@
 package com.mycompany.countryflag
 
+import com.mycompany.countryflag.viewmodels.CountryViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -23,8 +25,14 @@ import com.mycompany.countryflag.ui.theme.CountryFlagTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: CountryViewModel = CountryViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.getCountries()
+
         setContent {
             val scaffoldState = rememberScaffoldState()
             val coroutineScope = rememberCoroutineScope()
@@ -48,14 +56,27 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = ""
                                     )
                                 }
-                            })
+                            },
+                            actions = {
+                                IconButton(
+                                    onClick = {
+                                        viewModel.getCountries()
+                                    },
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Refresh,
+                                        contentDescription = ""
+                                    )
+                                }
+                            }
+                        )
                     },
                     drawerContent = {
                         DrawerMenu()
                     }
                 ) {
                     NavHost(navController = navHostController, startDestination = "countriesList") {
-                        composable("countriesList") { CountriesList(navHostController = navHostController) }
+                        composable("countriesList") { CountriesList(navHostController = navHostController, countryViewModel = viewModel) }
                         composable(
                             "countryDetails/{encodedCountry}",
                             arguments = listOf(navArgument("encodedCountry") { type = NavType.StringType })
@@ -73,6 +94,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     CountryFlagTheme {
-        CountriesList(navHostController = NavHostController(context = LocalContext.current))
+        CountriesList(navHostController = NavHostController(context = LocalContext.current), countryViewModel = CountryViewModel())
     }
 }
